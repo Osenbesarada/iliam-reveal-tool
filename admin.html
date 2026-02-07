@@ -116,6 +116,37 @@
     const name = document.getElementById("imageName").value;
     update(ref(db, "state"), { image: name });
   };
+  // 画像アップロード処理（Base64方式）
+document.getElementById("uploadImage").onclick = async () => {
+  const file = document.getElementById("fileInput").files[0];
+  if (!file) {
+    alert("画像を選んでね");
+    return;
+  }
+
+  // 画像サイズチェック
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  await img.decode();
+
+  if (img.width > 2000 || img.height > 4000) {
+    alert("画像サイズは最大 縦4000 × 横2000 までだよ");
+    return;
+  }
+
+  // Base64 に変換
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+
+  reader.onload = () => {
+    const base64 = reader.result; // data:image/png;base64,xxxx
+
+    // DB に保存
+    update(ref(db, "state"), { image: base64 });
+
+    alert("アップロード完了！");
+  };
+};
 </script>
 
 </body>
