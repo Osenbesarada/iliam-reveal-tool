@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>管理ページ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fafafa;
+      padding: 20px;
+    }
+    #admin-area {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      max-width: 400px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
 
+<h2>立ち絵公開ツール 管理ページ</h2>
+
+<div id="login-area">
+  <h3>ログイン</h3>
+  <input id="email" type="email" placeholder="メールアドレス">
+  <input id="password" type="password" placeholder="パスワード">
+  <button id="login">ログイン</button>
+</div>
+
+<div id="admin-area" style="display:none;">
+  <h3>操作パネル</h3>
+
+  <label>解放ピクセル数：</label>
+  <input id="pixels" type="number" placeholder="例：300">
+
+  <button id="update">更新</button>
+
+  <br><br>
+
+  <label>立ち絵ファイル名：</label>
+  <input id="imageName" type="text" placeholder="例：img/standing.png">
+
+  <button id="updateImage">画像を変更</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // 🔧 こっちゃんの Firebase 設定をここに貼る
+  const firebaseConfig = {
+    apiKey: "AIzaSyCBqLHyDTuOgqDSNE1myi6JfAKR925gx1Y",
+    authDomain: "iliam-reveal-tool.firebaseapp.com",
+    databaseURL: "https://iliam-reveal-tool-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "iliam-reveal-tool",
+    storageBucket: "iliam-reveal-tool.firebasestorage.app",
+    messagingSenderId: "238880304896",
+    appId: "1:238880304896:web:e0973954e377aac0714de5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
+
+  const loginArea = document.getElementById("login-area");
+  const adminArea = document.getElementById("admin-area");
+
+  // 🔐 ログイン処理
+  document.getElementById("login").onclick = () => {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+    signInWithEmailAndPassword(auth, email, pass)
+      .catch(err => alert("ログイン失敗：" + err.message));
+  };
+
+  // 🔥 ログイン状態を監視
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginArea.style.display = "none";
+      adminArea.style.display = "block";
+    }
+  });
+
+  // 🔧 ピクセル数を更新
+  document.getElementById("update").onclick = () => {
+    const pixels = Number(document.getElementById("pixels").value);
+    update(ref(db, "state"), { revealed: pixels });
+  };
+
+  // 🔧 画像ファイル名を更新
+  document.getElementById("updateImage").onclick = () => {
+    const name = document.getElementById("imageName").value;
+    update(ref(db, "state"), { image: name });
+  };
+</script>
+
+</body>
+</html>
