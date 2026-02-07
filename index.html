@@ -35,13 +35,13 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-  // 🔧
+  // 🔧 Firebase 設定（修正版）
   const firebaseConfig = {
     apiKey: "AIzaSyCBqLHyDTuOgqDSNE1myi6JfAKR925gx1Y",
-    authDomain: iliam-reveal-tool.firebaseapp.com",
+    authDomain: "iliam-reveal-tool.firebaseapp.com",
     databaseURL: "https://iliam-reveal-tool-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "iliam-reveal-tool",
-    storageBucket: "iliam-reveal-tool.firebasestorage.app",
+    storageBucket: "iliam-reveal-tool.appspot.com",
     messagingSenderId: "238880304896",
     appId: "1:238880304896:web:e0973954e377aac0714de5"
   };
@@ -52,10 +52,14 @@
   const container = document.getElementById("container");
   const image = document.getElementById("image");
 
-  // 🔥
+  // 🔥 Realtime Database の state を監視
   onValue(ref(db, "state"), (snapshot) => {
     const data = snapshot.val();
+
+    // Base64 画像をそのまま表示
     image.src = data.image;
+
+    // 解放ピクセル数に応じて高さを変更
     container.style.height = `${data.revealed}px`;
   });
 </script>
