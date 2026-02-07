@@ -1,1 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>立ち絵公開ビューア</title>
+  <style>
+    body {
+      background: #fafafa;
+      text-align: center;
+      font-family: sans-serif;
+    }
+    #container {
+      width: 400px;
+      overflow: hidden;
+      margin: 20px auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+    }
+    #image {
+      width: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
 
+<h2>立ち絵公開ビューア</h2>
+
+<div id="container">
+  <img id="image" src="" alt="立ち絵">
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  // 🔧
+  const firebaseConfig = {
+    apiKey: "AIzaSyCBqLHyDTuOgqDSNE1myi6JfAKR925gx1Y",
+    authDomain: "iliam-reveal-tool.firebaseapp.com",
+    databaseURL: "https://iliam-reveal-tool-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "iliam-reveal-tool",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_SENDER",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const container = document.getElementById("container");
+  const image = document.getElementById("image");
+
+  // 🔥
+  onValue(ref(db, "state"), (snapshot) => {
+    const data = snapshot.val();
+    image.src = data.image;
+    container.style.height = `${data.revealed}px`;
+  });
+</script>
+
+</body>
+</html>
